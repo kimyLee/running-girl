@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<head>
+    <title>迷宫</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0"/>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+
+
+        $(function () {
+            window.requestAnimFrame = (function () {
+                return window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        function (callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+            /*计算屏幕高宽，初始canvas*/
+            var boxX = 0;
+            var boxY = 0;
+            var Width = $(window).width();
+            var Height = $(window).height();
+            var arr = [[0, 0, Width, 0], [0, 0, 0, Height], [0, Height, Width, Height], [Width, 0, Width, Height], [240, 10, 240, 70], [180, 110, 280, 110], [280, 70, 280, 110], [0, 170, 160, 170], [160, 170, 160, 210], [160, 210, 300, 210], [120, 50, 170, 50], [180, 50, 180, 110], [120, 50, 120, 230], [120, 230, 10, 230], [0, 190, 0, 230]];
+            var str = "<canvas id='canvas' width=" + Width + "; height=" + Height + ">Sorry!</canvas>";
+            $('#field').html(str);
+            /*初始化环境参数*/
+            var canvas = $("canvas").get(0);
+            var context = canvas.getContext("2d");
+            var fouse = 300;//焦距
+            var random = function (min, max) {
+                return Math.floor(Math.random() * (max - min)) + min;
+            };
+            var current = 0;
+            var begin_x = 0;
+            var direct = 120;   //0 120 360 480;
+            /*初始化对象*/
+            //初始化小球
+            var obj = {
+                x: 30,
+                y: 30,
+                z: 0,
+                r: 17,
+                xspeed: 0,
+                yspeed: 0
+            };
+            var circle = obj;
+            var enemy = {
+                x: 180,
+                y: 130,
+                z: 0,
+                r: 15,
+                xspeed: 0,
+                yspeed: 0.5
+            };
+            var enemys = enemy;
+            var image = new Image();
+            var enemy_x = 0;
+            var enemy_y = 0;
+
+            image.src = "img/role.png";
+            var img_grass = new Image();
+            img_grass.src = "img/wall.png";
+            var en = new Image();
+            en.src = "img/enemy.png";
+            /*绘制规则*/
+            var draw = function () {
+                current++;
+                context.clearRect(boxX, boxY, Width, Height);
+                for (var i = arr.length; i--;) {
+                    if (intersect(arr[i][0], arr[i][1], arr[i][2], arr[i][3], circle.x + circle.xspeed * 5, circle.y + circle.yspeed * 5, circle.r)) {
+                        circle.xspeed = 0;
+                        circle.yspeed = 0;
+                        begin_x = 0;
+                        break;
+                    }
+                }
+                begin_x = (circle.xspeed == 0 && circle.yspeed == 0) ? 0 : ((current / 9) << 0) % 4 * 120;
+                circle.x += circle.xspeed;
+                circle.y += circle.yspeed;
+                //开始剪切x ,开始剪切y,被剪切宽度,被剪切高度,画布上x坐标,画布上y坐标,图像的宽度,图像的高度
+                enemys.y = enemys.y + enemys.yspeed;
+                if (enemys.y >= 170) {
+                    enemys.yspeed = -1 * enemys.yspeed;
+                    enemy_y = 374;
+                }
+                if (enemys.y <= 110) {
+                    enemys.yspeed = -1 * enemys.yspeed;
+                    enemy_y = 0;
+                }
+                context.drawImage(en, ((current / 9) << 0) % 4 * 143, enemy_y, 126, 128, enemys.x - 10, enemys.y - 10, 50, 50);
+
+                context.save();
+
+                //开始剪切x ,开始剪切y,被剪切宽度,被剪切高度,画布上x坐标,画布上y坐标,图像的宽度,图像的高度
+                context.drawImage(image, begin_x, direct, 120, 120, circle.x - 15, circle.y - 15, 30, 30);
+
+
+                for (var i = arr.length; i--;) {
+                    var begin;
+                    var len;
+                    if (arr[i][0] - arr[i][2] == 0) {
+                        if (arr[i][1] > arr[i][3]) {
+                            begin = arr[i][3];
+                            len = arr[i][1] - arr[i][3];
+                        } else {
+                            begin = arr[i][1];
+                            len = arr[i][3] - arr[i][1];
+                        }
+                        drawWall(1, arr[i][0], begin, len);
+                    }
+                    else {
+                        if (arr[i][0] > arr[i][2]) {
+                            begin = arr[i][2];
+                            len = arr[i][0] - arr[i][2];
+                        } else {
+                            begin = arr[i][0];
+                            len = arr[i][2] - arr[i][0];
+                        }
+                        drawWall(2, arr[i][1], begin, len);
+                    }
+
+                }
+
+                context.restore();
+
+            };
+
+
+            /*计时器，运行函数*/
+            run();
+            function run() {
+                draw();
+                window.requestAnimationFrame(run);
+            }
+
+
+
+            //绘制方法
+            function drawEnemy() {
+
+            }
+            function drawWall(type, xy, begin, len) {
+                if (type == 1) {
+                    for (var i = 0; i <= len; i += 20) {
+                        //开始剪切x ,开始剪切y,被剪切宽度,被剪切高度,画布上x坐标,画布上y坐标,图像的宽度,图像的高度
+                        context.drawImage(img_grass, 0, 0, 30, 30, xy - 10, begin + i - 10, 20, 20);
+                    }
+                } else {
+                    for (var j = 0; j <= len; j += 20) {
+                        //开始剪切x ,开始剪切y,被剪切宽度,被剪切高度,画布上x坐标,画布上y坐标,图像的宽度,图像的高度
+                        context.drawImage(img_grass, 0, 0, 30, 30, begin + j - 10, xy - 10, 20, 20);
+                    }
+                }
+            }
+
+            //操作函数
+            var option={
+                listen : function(){
+                    var startX, startY;
+                    var $this=this;
+                    canvas.addEventListener('touchstart', function (ev) {
+                        startX = ev.touches[0].pageX;
+                        startY = ev.touches[0].pageY;
+                    }, false);
+                    canvas.addEventListener('touchend', function (ev) {
+                        var endX, endY;
+                        endX = ev.changedTouches[0].pageX;
+                        endY = ev.changedTouches[0].pageY;
+                        var direction = $this.GetSlideDirection(startX, startY, endX, endY);
+                        switch (direction) {
+                            case 0:
+                                circle.xspeed = 0;
+                                circle.yspeed = 0;
+
+                                break;
+                            case 1:
+                                circle.xspeed = 0;
+                                circle.yspeed = -1;
+                                direct = 240;
+                                break;
+                            case 2:
+                                circle.xspeed = 0;
+                                circle.yspeed = 1;
+                                direct = 0;
+                                break;
+                            case 3:
+                                circle.yspeed = 0;
+                                circle.xspeed = -1;
+                                direct = 360;
+                                break;
+                            case 4:
+                                circle.yspeed = 0;
+                                circle.xspeed = 1;
+                                direct = 120;
+                                break;
+                            default:
+                        }
+                    }, false);
+                },
+                GetSlideAngle: function(dx, dy){
+                    return Math.atan2(dy, dx) * 180 / Math.PI;
+                },
+                GetSlideDirection: function(startX, startY, endX, endY){
+                    var dy = startY - endY;
+                    var dx = endX - startX;
+                    var result = 0;
+                    //如果滑动距离太短
+                    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+                        return result;
+                    }
+
+                    var angle = this.GetSlideAngle(dx, dy);
+                    if (angle >= -45 && angle < 45) {
+                        result = 4;
+                    } else if (angle >= 45 && angle < 135) {
+                        result = 1;
+                    } else if (angle >= -135 && angle < -45) {
+                        result = 2;
+                    }
+                    else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+                        result = 3;
+                    }
+
+                    return result;
+                }
+            };
+            function GetSlideAngle(dx, dy) {
+                return Math.atan2(dy, dx) * 180 / Math.PI;
+            }
+
+            //根据起点和终点返回方向 1：向上，2：向下，3：向左，4：向右,0：未滑动
+            function GetSlideDirection(startX, startY, endX, endY) {
+                var dy = startY - endY;
+                var dx = endX - startX;
+                var result = 0;
+                //如果滑动距离太短
+                if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+                    return result;
+                }
+
+                var angle = GetSlideAngle(dx, dy);
+                if (angle >= -45 && angle < 45) {
+                    result = 4;
+                } else if (angle >= 45 && angle < 135) {
+                    result = 1;
+                } else if (angle >= -135 && angle < -45) {
+                    result = 2;
+                }
+                else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+                    result = 3;
+                }
+
+                return result;
+            }
+
+            //滑动处理
+            var startX, startY;
+            canvas.addEventListener('touchstart', function (ev) {
+                startX = ev.touches[0].pageX;
+                startY = ev.touches[0].pageY;
+            }, false);
+            canvas.addEventListener('touchend', function (ev) {
+                var endX, endY;
+                endX = ev.changedTouches[0].pageX;
+                endY = ev.changedTouches[0].pageY;
+                var direction = GetSlideDirection(startX, startY, endX, endY);
+                switch (direction) {
+                    case 0:
+                        circle.xspeed = 0;
+                        circle.yspeed = 0;
+
+                        break;
+                    case 1:
+                        circle.xspeed = 0;
+                        circle.yspeed = -1;
+                        direct = 240;
+                        break;
+                    case 2:
+                        circle.xspeed = 0;
+                        circle.yspeed = 1;
+                        direct = 0;
+                        break;
+                    case 3:
+                        circle.yspeed = 0;
+                        circle.xspeed = -1;
+                        direct = 360;
+                        break;
+                    case 4:
+                        circle.yspeed = 0;
+                        circle.xspeed = 1;
+                        direct = 120;
+                        break;
+                    default:
+                }
+            }, false);
+            function intersect(sx, sy, fx, fy, cx, cy, rad) {
+                var dx;
+                var dy;
+                var t;
+                var rt;
+                dx = fx - sx;
+                dy = fy - sy;
+                t = 0.0 - (((sx - cx) * dx + (sy - cy) * dy) / (dx * dx + dy * dy));
+                if (t < 0.0) {
+                    t = 0.0;
+                }
+                else if (t > 1.0)
+                    t = 1.0;
+                var dx1 = (sx + t * dx) - cx;
+                var dy1 = (sy + t * dy) - cy;
+                var rt = dx1 * dx1 + dy1 * dy1;
+                if (rt < rad * rad) {
+
+                    return true;
+                }
+                else {
+
+                    return false;
+                }
+
+            }
+        });
+
+        /*游戏逻辑函数*/
+
+
+    </script>
+</head>
+<body>
+
+<div id="field"></div>
+
+
+</body>
+</html>

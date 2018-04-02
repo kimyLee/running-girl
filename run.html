@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+<body style="background:black;overflow: hidden">
+<div class="menu" id="menu">
+    <div id="submenu">
+    <img class="logo" src="image/logo.png" >
+    <button class="choujiang"  onclick=""></button>
+    <button class="start"  onclick="init();startHide()"></button>
+    <button class="rule" ></button>
+    <button class="reward" onclick="showreward()"></button>
+    </div>
+<!--
+    <div class="score" style="position: absolute;left:30px;top:80px;font-weight: bold;font-size:40px"><span id="score">0</span></div>
+-->
+
+    <div id="panel" style="overflow: hidden;"></div>
+    </div>
+<div class="title" id="title">
+    <img src="image/title.png">
+    <div class="time"><span id="time">60</span></div>
+    <div class="place"><span id="place">三雄·极光</span></div>
+
+</div>
+<!--<div class="fixpic" id="fixpic">
+    <img src="image/fixpic.png">
+
+</div>-->
+<!--
+<div class="fixtime" id="fixtime"></div>
+-->
+
+<div class="ruler" id="reward">
+    <div class="ruletop"><label style="margin-left: 27px">奖项设置</label>
+        <div id="back" onclick="back()"></div>
+    </div>
+    <div class="one" style="padding: 0px">
+       <p style="font-size: 1em"><b style="color:#901e00">一等奖：</b><b style="color:#e74c3c">成为国足世预赛三雄·极光百人助威团成员之一，玩转马尔代夫</b></p>
+        <p>包含：9月初广州出发至马尔代夫旅游助威团费用；2015年9月8日世界杯预选赛马尔代夫VS中国 现场球票一张。</p>
+        <p>注：从家到广州的往返交通费自理。</p>
+    </div>
+    <div class="two" style="padding: 0px">
+       <p style="font-size: 1em"><b style="color:#901e00">二等奖：</b><b style="color:#e74c3c">成为国足世预赛三雄·极光百人助威团成员之一，玩转巴厘岛</b></p>
+        <p >包含：2015年9月4日深圳出发至巴厘岛旅游助威团费用；2015年9月3日世界杯预选赛中国VS中国香港 现场球票一张。</p>
+        <p >注：从家到深圳的往返交通费自理。</p>
+    </div>
+    <div class="three" style="padding: 0px">
+       <p style="font-size: 1em"><b style="color:#901e00">三等奖：</b><b style="color:#e74c3c">价值379元的三雄·极光晶炫LED台灯一只（共200名）</b></p>
+    </div>
+    <div class="four" style="padding: 0px">
+        <p style="font-size: 1em"><b style="color:#901e00">四等奖：</b><b style="color:#e74c3c">100元电子现金券（共1000名）</b></p>
+    </div>
+    <div class="lucky">
+        <p style="font-size: 1em"><b style="color:#901e00">幸运奖：</b><b style="color:#e74c3c">20元电子现金券（共5000名）</b></p>
+    </div>
+</div>
+
+<div class="alert1" id="alert1">
+    <div class="info" id="info"></div>
+    <img src="image/sharebtn.png" alt="button" onclick="window.location.href='run.html'"/>
+</div>
+<div class="alert1" id="alert2">
+    <div class="info" id="info2"></div>
+    <img src="image/sharebtn.png" alt="button" onclick="share();" />
+</div>
+<div class="alert1" id="alert3">
+    <div class="info" id="info3">您与老友今天挑战的里程数已达上限</div>
+    <img src="image/confirm.png" alt="button" onclick="window.location.href='run.html'" />
+</div>
+<!--<img src="images/pause.PNG" style="position:absolute;left:30px;top:30px;cursor:pointer;" onclick="stop()">
+<div class="score" style="position: absolute;left:30px;top:80px;font-weight: bold;font-size:40px"><span id="score">0</span></div>
+<input id="start" type="button" value="开始" style="position: absolute;left:233px;top:250px;cursor:pointer" onclick="init();startHide()">
+<div style="position: absolute;top:150px;text-align: center"><span id="rules">游戏规则：子弹击中敌机得分，<br>飞机碰到敌机或敌机落地游戏结束</span></div>
+<div style="position:absolute;left:200px;top:230px"><span id="showScore"></span></div>-->
+
+
+
+<script type="text/javascript">
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight-5 || document.body.clientHeight;
+        var str="<canvas id='canvas' width="+w+" height="+h+" >Sorry!</canvas>";
+        document.getElementById("panel").innerHTML =str;
+
+
+
+
+
+    function showreward(){
+        document.getElementById("reward").style.display="block";
+
+    }
+    function back(){
+        document.getElementById("reward").style.display="none";
+
+    }
+    function startHide(){
+        document.getElementById("submenu").style.display="none";
+      //  document.getElementById("menu").style.background="url('image/back.png')";
+        document.getElementById("menu").style.background="none";
+        document.getElementById("title").style.display="block";
+      //  document.getElementById("fixtime").style.display="block";
+      //  document.getElementById("fixpic").style.display="block";
+
+
+    }
+
+        function share(){
+            //  document.getElementById("showScore").innerHTML="您的成绩为："+parseInt(score);
+
+        }
+    function showScore(){
+      //  document.getElementById("showScore").innerHTML="您的成绩为："+parseInt(score);
+
+    }
+    </script>
+<script type="text/javascript" src="js/mytest.js"></script>
+
+</body>
+</html>
